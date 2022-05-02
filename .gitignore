@@ -22,3 +22,5 @@ native_modules/**/**/config.gypi
 .DS_Store
 
 connection_state.json
+
+package-lock.json
