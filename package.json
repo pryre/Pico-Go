@@ -24,8 +24,8 @@
     "Other"
   ],
   "activationEvents": [
-	 "onCommand:picogo.initialise",
-	 "workspaceContains:**/.vscode/Pico-Stub"
+    "onCommand:picogo.initialise",
+    "workspaceContains:**/.vscode/Pico-Stub"
   ],
   "main": "./pymakr",
   "compatibility": [
@@ -255,6 +255,7 @@
     "vscode:prepublish": "npm ci && npm prune"
   },
   "dependencies": {
+    "@actions/core": "^1.8.0",
     "async-mutex": "^0.3.1",
     "binascii": "0.0.2",
     "bindings": "^1.5.0",
