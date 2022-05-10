@@ -24,7 +24,8 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+	 "onCommand:picogo.initialise",
+	 "workspaceContains:**/.vscode/Pico-Stub"
   ],
   "main": "./pymakr",
   "compatibility": [
