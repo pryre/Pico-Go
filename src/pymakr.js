@@ -42,7 +42,7 @@ export default class Pymakr extends EventEmitter {
     this.runner = new Runner(pyboard, this.terminal, this);
     this.outputHidden = false;
     this.status = IDLE;
-    this._fileSystems
+    this._fileSystems;
 
     this.settings.on('format_error', function() {
       _this.terminal.writeln('JSON format error in global pico-go.json file');
@@ -611,7 +611,7 @@ export default class Pymakr extends EventEmitter {
     }
     if (this.isIdle()) {
       this.syncObj = new Sync(this.board, this.settings, this.terminal);
-      
+
       if (type == 'send') {
         this.startOperation('picogo.upload', SYNCHRONIZING);
       }
@@ -780,7 +780,7 @@ export default class Pymakr extends EventEmitter {
           `Firmware version v${server.version} (${server.date}) is available. Would you like to download it?`,
           ['Yes', 'No']
         );
-  
+
         if (choice == 'Yes') {
           vscode.env.openExternal(vscode.Uri.parse(server.url));
         }
@@ -799,15 +799,15 @@ export default class Pymakr extends EventEmitter {
 
   async _getBoardVersion() {
     this.outputHidden = true;
-  
+
     try{
       let response = await this.board.run('import os;print(os.uname().version)\r\n');
 
       this.logger.warning(response);
-      
+
       let m = /v([0-9]+\.[0-9]+(\.[0-9]+)?)/.exec(response);
       let version = m[1];
-      
+
       m = /[0-9]{4}-[0-9]{2}-[0-9]{2}/.exec(response);
       let date = m[0];
 
@@ -828,13 +828,13 @@ export default class Pymakr extends EventEmitter {
     try {
       let response = await fetch('https://micropython.org/download/rp2-pico/');
       let html = await response.text();
-      
-      let m = /href="(?<url>\/resources\/firmware\/rp2-pico-[0-9]{8}-v[^"]+)"/gm.exec(html);
+
+      let m = new RegExp('href="(?<url>\/resources\/firmware\/rp2-pico-[0-9]{8}-v[^"]+)"', 'gm').exec(html);
       let url = 'https://micropython.org' + m[1];
 
       m = /v([0-9]+\.[0-9]+(\.[0-9]+)?)/.exec(url);
       let version = m[1];
-      
+
       m = /[0-9]{8}/.exec(url);
       let date = m[0];
       date = `${date.substr(0, 4)}-${date.substr(4, 2)}-${date.substr(6, 4)}`;
@@ -846,7 +846,7 @@ export default class Pymakr extends EventEmitter {
       };
     }
     catch(err) {
-      this.logger.warning(`Error while finding server version number: ${err}`)
+      this.logger.warning(`Error while finding server version number: ${err}`);
     }
 
   }

@@ -63,7 +63,7 @@ export default class PySocket {
   registerListener(cb) {
     this.onmessage = cb;
     this.stream.on('data', function(data) {
-      let raw = Buffer(data);
+      let raw = Buffer.from(data);
       cb(data, raw);
     });
   }

@@ -7,7 +7,7 @@
   "homepage": "http://pico-go.net/",
   "repository": "https://github.com/cpwood/Pico-Go",
   "icon": "images/logo.png",
-  "license": "SEE LICENSE IN <LICENSE.md>",
+  "license": "SEE LICENSE IN LICENSE.md",
   "galleryBanner": {
     "color": "#ffffff",
     "theme": "light"
@@ -24,8 +24,8 @@
     "Other"
   ],
   "activationEvents": [
-	 "onCommand:picogo.initialise",
-	 "workspaceContains:**/.vscode/Pico-Stub"
+    "onCommand:picogo.initialise",
+    "workspaceContains:**/.vscode/pico-go.json"
   ],
   "main": "./pymakr",
   "compatibility": [
@@ -290,6 +290,7 @@
     "xterm": "^4.10.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.17.10",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.19.16",
     "babel-cli": "^6.26.0",

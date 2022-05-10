@@ -24,16 +24,16 @@ export default class StubsManager {
             let existingVersion = JSON.parse(await fsp.readFile(existingVersionFile, 'utf-8'));
 
             if (thisVersion.version == existingVersion.version)
-                return;         
+                return;
         }
 
         try {
-            await fse.emptyDir(path.join(configFolder, 'Pico-Stub')); 
+            await fse.emptyDir(path.join(configFolder, 'Pico-Stub'));
             await fse.copy(path.resolve(path.join(__dirname, '..', '..', 'stubs')), path.resolve(path.join(configFolder, 'Pico-Stub')));
         }
         catch(err) {
             console.log(err);
-        }      
+        }
     }
 
     async addToWorkspace() {

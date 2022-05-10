@@ -13,7 +13,7 @@ export default class PyTelnet {
 
     let stream = new TelnetClient('pycomboard');
     this.stream = stream;
-    
+
     this.connected = false;
     this.listening = false;
     this.usernameSent = false;
@@ -82,7 +82,7 @@ export default class PyTelnet {
     this.stream.close();
     // give the connection time to close.
     // there is no proper callback for this in the telnet lib.
-    
+
     await utils.sleep(200);
     await new Promise(resolve => setTimeout(resolve, 200));
   }
@@ -93,7 +93,7 @@ export default class PyTelnet {
     this.stream.read(function(err, recv) {
       if (recv) {
         let data = recv.join('');
-        let raw = Buffer(recv);
+        let raw = Buffer.from(recv);
         cb(data, raw);
       }
     });

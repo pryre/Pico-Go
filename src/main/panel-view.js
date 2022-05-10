@@ -45,7 +45,7 @@ export default class PanelView extends EventEmitter {
     // create terminal
     this.terminal = new Term(this.board, _this.settings);
     await this.terminal.initialize(onTermConnect);
-    
+
     this.terminal.setOnMessageListener(function(input) {
       _this.emit('user_input', input);
     });
@@ -196,6 +196,7 @@ export default class PanelView extends EventEmitter {
 
   // Tear down any state and detach
   async destroy() {
-    await this.disconnect();
+    if(this.terminal)
+      await this.terminal.disconnect();
   }
 }

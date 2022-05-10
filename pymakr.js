@@ -14,10 +14,10 @@ async function activate(context) {
 }
 
 async function deactivate() {
-  if (view != undefined)
-    setTimeout(async() => {
-      await view.destroy();
-    }, 1500);
+  if (view)
+    await view.destroy();
+    // setTimeout(async() => {
+    // }, 1500);
 }
 
 function getOsName() {

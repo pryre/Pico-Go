@@ -4,10 +4,12 @@ import Logger from '../helpers/logger.js';
 import ApiWrapper from '../main/api-wrapper.js';
 import { Socket } from 'net';
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 export default class Term {
 
   constructor(board, settings) {
-    this.port = parseInt(Math.random() * 1000 + 1337);
+    this.port = 0;
     this.host = '127.0.0.1';
     this.termBuffer = '';
     this.terminalName = 'Pico Console';
@@ -25,21 +27,40 @@ export default class Term {
     this.stream = new Socket();
     this.connected = false;
     this.isWindows = process.platform == 'win32';
+    this.stopped = false;
 
     //dragging
     this.startY = null;
-    let _this = this;
+  }
 
-    vscode.window.onDidCloseTerminal(async function(event) {
-      if (!_this.createFailed && event._name == _this.terminalName) {
-        await _this._create();
-      }
-    });
+  async terminal_closed(event) {
+    if (!this.createFailed && event.name == this.terminalName) {
+      await this._create();
+    }
+  }
+
+  async _destroy_stream() {
+    this.stream.removeAllListeners();
+
+    if(this.stream)
+      this.stream.end();
+  }
+
+  stop_capture_terminal_closes() {
+    if(this.remove_onclose) {
+      this.remove_onclose.dispose();
+      this.remove_onclose = null;
+    }
+  }
+
+  capture_terminal_closes() {
+    this.stop_capture_terminal_closes();
+    this.remove_onclose = vscode.window.onDidCloseTerminal(this.terminal_closed.bind(this));
   }
 
   async initialize(cb) {
     await this._create();
-    this._connect(cb);
+    await this._connect(cb);
   }
 
   show() {
@@ -52,13 +73,22 @@ export default class Term {
     this.terminal.hide();
   }
 
-  _connectReattempt(cb) {
-    let _this = this;
+  async _connectReattempt(cb) {
     this.connectionAttempt += 1;
     this.connected = false;
-    setTimeout(function() {
-      _this._connect(cb);
-    }, 200);
+    await sleep(200);
+    this._connect(cb);
+  }
+
+  async disconnect() {
+    this.stop_capture_terminal_closes();
+
+    this._destroy_stream();
+
+    if(this.terminal) {
+      this.terminal.dispose();
+      this.terminal = null;
+    }
 
   }
 
@@ -71,19 +101,26 @@ export default class Term {
 
       let existingProcessId = this.settings.context ? this.settings.context.get('processId') : null;
 
+      this.stop_capture_terminal_closes();
       for(let t of vscode.window.terminals) {
         let p = await t.processId;
 
         if (p == existingProcessId) {
           t.dispose();
-          break;
         }
       }
+      this.capture_terminal_closes();
 
-      this.terminal = vscode.window.createTerminal({ name: this.terminalName,
-          shellPath: shellpath, shellArgs: [termpath, this.port
-        .toString()] });
-      
+      this.terminal = vscode.window.createTerminal({
+        name: this.terminalName,
+        shellPath: shellpath,
+        shellArgs: [
+          termpath,
+          this.port.toString()
+        ],
+        isTransient: true
+      });
+
       this.settings.context.update('processId', await this.terminal.processId);
 
       if (this.settings.open_on_start) {
@@ -95,61 +132,51 @@ export default class Term {
     }
   }
 
-  _connect(cb) {
+  async handle_stream_reconnect(cb, reason, error=null) {
+    this.logger.warning(reason);
+    if(error)
+      this.logger.warning(error);
 
-    if (this.connectionAttempt > 20) {
+    if(!this.stopped && !this.too_many_reconnects()) {
+      this.stopped = true;
+      this._connectReattempt(cb);
+    }
+  }
+
+  async handle_connected(cb) {
+    this.stopped = false;
+    this.connectionAttempt = 1;
+    this.logger.info('Terminal connected');
+    this.connected = true;
+    cb();
+  }
+
+  too_many_reconnects() {
+    return this.connectionAttempt > 20;
+  }
+
+  async _connect(cb) {
+    if (this.too_many_reconnects()) {
       cb(new Error(
         'Unable to start the terminal. Restart VSC or file an issue on our github'
         ));
       return;
     }
-    let _this = this;
-    let stopped = false;
+
+    this._destroy_stream();
+
     this.connected = false;
     this.stream = new Socket();
+
+    this.stream.on('connect', this.handle_connected.bind(this, cb));
+    this.stream.on('timeout', this.handle_stream_reconnect.bind(this, cb, 'Timeout'));
+    this.stream.on('error', this.handle_stream_reconnect.bind(this, cb, 'Error while connecting to term'));
+    this.stream.on('close', this.handle_stream_reconnect.bind(this, cb, 'Term connection closed'));
+    this.stream.on('end', this.handle_stream_reconnect.bind(this, cb, 'Term connection ended'));
+
+    this.stream.on('data', this._userInput.bind(this));
+
     this.stream.connect(this.port, this.host);
-    this.stream.on('connect', function(err) {
-      if (err) {
-        _this.logger.info('Terminal failed to connect');
-      }
-      else {
-        _this.logger.info('Terminal connected');
-      }
-      _this.connected = true;
-      cb(err);
-    });
-    this.stream.on('timeout', function() {
-      if (!stopped) {
-        stopped = true;
-        _this._connectReattempt(cb);
-      }
-    });
-    this.stream.on('error', function(error) {
-      _this.logger.warning('Error while connecting to term');
-      _this.logger.warning(error);
-      if (!stopped) {
-        stopped = true;
-        _this._connectReattempt(cb);
-      }
-    });
-    this.stream.on('close', function(had_error) {
-      _this.logger.warning('Term connection closed');
-      _this.logger.warning(had_error);
-      if (!stopped) {
-        stopped = true;
-        _this._connectReattempt(cb);
-      }
-    });
-    this.stream.on('end', function() {
-      _this.logger.warning('Term connection ended ');
-      if (!stopped) {
-        stopped = true;
-        _this._connectReattempt(cb);
-      }
-    });
-    this.stream.on('data', function(data) {
-      _this._userInput(data);
-    });
   }
 
   setOnMessageListener(cb) {

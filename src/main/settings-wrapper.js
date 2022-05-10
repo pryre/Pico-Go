@@ -4,6 +4,7 @@ import EventEmitter from 'events';
 import ApiWrapper from './api-wrapper.js';
 import Logger from '../helpers/logger.js';
 import * as fs from 'fs';
+import path from 'path';
 import { promises as fsp } from 'fs';
 import * as vscode from 'vscode';
 import Config from '../config.js';
@@ -19,7 +20,7 @@ export default class SettingsWrapper extends EventEmitter {
     this.api = new ApiWrapper(this);
     this.projectPath = this.api.getProjectPath();
     this.globalConfigFile = Utils.getConfigPath('pico-go.json');
-    this.projectConfigFile = this.projectPath + '/pico-go.json';
+    this.projectConfigFile = path.join(this.projectPath, '.vscode', 'pico-go.json');
     this.logger = new Logger('SettingsWrapper');
     this.utils = new Utils(this);
     this.projectChangeCallbacks = [];
@@ -68,7 +69,6 @@ export default class SettingsWrapper extends EventEmitter {
 
   getProjectPath() {
     this.projectPath = this.api.getProjectPath();
-    this.projectConfigFile = this.projectPath + '/pico-go.json';
     return this.projectPath;
   }
 
@@ -245,7 +245,7 @@ export default class SettingsWrapper extends EventEmitter {
   }
 
   _setProjectConfig() {
-    // these projects settings override the global settings 
+    // these projects settings override the global settings
     if ('sync_folder' in this.projectConfig) {
       this.sync_folder = this.projectConfig.sync_folder;
     }
@@ -331,7 +331,7 @@ export default class SettingsWrapper extends EventEmitter {
       await this.createProjectSettings();
 
       let uri = vscode.Uri.file(this.projectConfigFile);
-      
+
       let textDoc = await workspace.openTextDocument(uri);
       await vscode.window.showTextDocument(textDoc);
     }

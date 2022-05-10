@@ -33,7 +33,7 @@ export default class Activator {
         null,
         'OK', 'Global Settings'
       );
-      
+
       if (choice == 'Global Settings')
         await sw.api.openSettings();
       return;
@@ -223,7 +223,7 @@ export default class Activator {
     for(let executable of executables) {
       if (executable != undefined) {
         let result = await this._tryPython(executable);
-        let match = /Python (?<major>[0-9]+)\.[0-9]+\.[0-9]+/gm.exec(result);
+        let match = new RegExp('Python (?<major>[0-9]+)\.[0-9]+\.[0-9]+', 'gm').exec(result);
 
         if (match != undefined && parseInt(match.groups.major) >= 3){
           sw.detectedPythonPath = executable;
@@ -239,7 +239,7 @@ export default class Activator {
       return result.stdout;
     }
     catch (err) {
-      return "error";
+      return 'error';
     }
   }
 

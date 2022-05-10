@@ -82,7 +82,7 @@ export default class PySerial {
     this.onmessage = cb;
     this.stream.on('data', function(data) {
       let data_str = data.toString();
-      data = Buffer(data);
+      data = Buffer.from(data);
       _this.onmessage(data_str, data);
     });
   }
