@@ -1,77 +1,45 @@
-# Copyright (c) 2019, Digi International, Inc.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+"""
+binary/ASCII conversions. See: https://docs.micropython.org/en/v1.19/library/binascii.html
 
-from typing import Any
+|see_cpython_module| :mod:`python:binascii` https://docs.python.org/3/library/binascii.html .
 
+This module implements conversions between binary data and various
+encodings of it in ASCII form (in both directions).
+"""
 
-def hexlify(data: Any, sep: Any="") -> bytes:
+# source version: v1_19
+# origin module:: repos/micropython/docs/library/binascii.rst
+from typing import IO, Any, Callable, Coroutine, Dict, Generator, Iterator, List, NoReturn, Optional, Tuple, Union
+
+def hexlify(data, sep: Optional[Any] = None) -> bytes:
     """
-    Returns the hexadecimal representation of the provided binary data.
+    Convert the bytes in the *data* object to a hexadecimal representation.
+    Returns a bytes object.
 
-    :param data: Binary data to convert.
-    :param sep: If supplied, this parameter is used as separator between
-        hexadecimal values.
-
-    :return: Bytes string with the hexadecimal representation.
+    If the additional argument *sep* is supplied it is used as a separator
+    between hexadecimal values.
     """
     ...
 
-def unhexlify(data: Any) -> bytes:
+def unhexlify(data) -> bytes:
     """
-    Converts hexadecimal data to binary representation. Inverse of
-    ``ubinascii.hexlify()``.
-
-    :param data: Hexadecimal data to convert.
-
-    :return: Bytes string with the binary representation.
+    Convert hexadecimal data to binary representation. Returns bytes string.
+    (i.e. inverse of hexlify)
     """
     ...
 
-def a2b_base64(data: Any) -> bytes:
+def a2b_base64(data) -> bytes:
     """
-    Decodes base64-encoded data, ignoring invalid characters in the input and
-    returns the decoded data. Conforms to RFC 2045 s.6.8.
-
-    :param data: The base64-encoded data to decode.
-
-    :return: Bytes string with the decoded data.
+    Decode base64-encoded data, ignoring invalid characters in the input.
+    Conforms to `RFC 2045 s.6.8 <https://tools.ietf.org/html/rfc2045#section-6.8>`_.
+    Returns a bytes object.
     """
     ...
 
-def b2a_base64(data: Any) -> bytes:
+def b2a_base64(data, *, newline=True) -> bytes:
     """
-    Encodes binary data in base64 format, as in RFC 3548 and returns the
-    encoded data followed by a newline character, as a bytes object.
-
-    :param data: Binary data to encode in base64 format.
-
-    :return: Bytes string with the encoded data.
-    """
-    ...
-
-def crc32(data: Any, crc: int=0) -> int:
-    """
-    Computes CRC-32 incrementally, the 32-bit checksum of ``data``, starting
-    with an initial CRC of ``crc``.
-    :param data: Data to obtain its 32-bit checksum.
-    :param crc: Starting CRC value.
-    :return: 32-bit checksum of the provided data.
+    Encode binary data in base64 format, as in `RFC 3548
+    <https://tools.ietf.org/html/rfc3548.html>`_. Returns the encoded data
+    followed by a newline character if newline is true, as a bytes object.
     """
     ...

@@ -1,64 +1,60 @@
-"""Garbage Collection
+"""
+control the garbage collector. See: https://docs.micropython.org/en/v1.19/library/gc.html
 
-This module provides control over the garbage collection process.
+|see_cpython_module| :mod:`python:gc` https://docs.python.org/3/library/gc.html .
 """
 
-def collect():
-    """
-    Run a garbage collection.
-    """
-    pass
+# source version: v1_19
+# origin module:: repos/micropython/docs/library/gc.rst
+from typing import IO, Any, Callable, Coroutine, Dict, Generator, Iterator, List, NoReturn, Optional, Tuple, Union
 
-def disable():
-    """
-    Disable automatic garbage collection. Heap memory can still be 
-    allocated, and garbage collection can still be initiated 
-    manually using ``gc.collect()``.
-    """
-    pass
-
-def enable():
+def enable() -> None:
     """
     Enable automatic garbage collection.
     """
-    pass
+    ...
 
-def isenabled() -> bool:
+def disable() -> None:
     """
-    Returns ``true`` when garbage collection is enabled.
+    Disable automatic garbage collection.  Heap memory can still be allocated,
+    and garbage collection can still be initiated manually using :meth:`gc.collect`.
     """
-    pass
+    ...
+
+def collect() -> None:
+    """
+    Run a garbage collection.
+    """
+    ...
 
 def mem_alloc() -> int:
     """
     Return the number of bytes of heap RAM that are allocated.
     """
-    pass
+    ...
 
 def mem_free() -> int:
     """
-    Return the number of bytes of available heap RAM, or -1 if this 
-    amount is not known.
+    Return the number of bytes of available heap RAM, or -1 if this amount
+    is not known.
     """
-    pass
+    ...
 
-def threshold(amount:int = None) -> int:
+def threshold(amount: Optional[Any] = None) -> Any:
     """
-    Set or query the additional GC allocation threshold. Normally, a 
-    collection is triggered only when a new allocation cannot be 
-    satisfied, i.e. on an out-of-memory (OOM) condition. If this 
-    function is called, in addition to OOM, a collection will be 
-    triggered each time after amount bytes have been allocated (in 
-    total, since the previous time such an amount of bytes have been 
-    allocated). amount is usually specified as less than the full 
-    heap size, with the intention to trigger a collection earlier 
-    than when the heap becomes exhausted, and in the hope that an 
-    early collection will prevent excessive memory fragmentation. 
-    This is a heuristic measure, the effect of which will vary from 
-    application to application, as well as the optimal value of the 
-    amount parameter.
+    Set or query the additional GC allocation threshold. Normally, a collection
+    is triggered only when a new allocation cannot be satisfied, i.e. on an
+    out-of-memory (OOM) condition. If this function is called, in addition to
+    OOM, a collection will be triggered each time after *amount* bytes have been
+    allocated (in total, since the previous time such an amount of bytes
+    have been allocated). *amount* is usually specified as less than the
+    full heap size, with the intention to trigger a collection earlier than when the
+    heap becomes exhausted, and in the hope that an early collection will prevent
+    excessive memory fragmentation. This is a heuristic measure, the effect
+    of which will vary from application to application, as well as
+    the optimal value of the *amount* parameter.
 
-    Calling the function without argument will return the current value 
-    of the threshold. A value of -1 means a disabled allocation threshold.
+    Calling the function without argument will return the current value of
+    the threshold. A value of -1 means a disabled allocation threshold.
     """
-    pass
+    ...
